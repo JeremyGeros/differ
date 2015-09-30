@@ -71,13 +71,31 @@ module Differ
       @raw.join()
     end
 
-    def format_as(f)
+    def format_as(f, interesting = false)
       f = Differ.format_for(f)
+      index = 0
       @raw.inject('') do |sum, part|
         part = case part
-        when String then part
+        when String 
+          first_part, last_part = "", ""
+          if interesting && part.length > 200
+            if @raw[index+1] && @raw[index+1].is_a?(Change)
+              first_part = part.split(//).last(100).join
+              first_part = "..." + first_part if first_part.length != part.length
+            end
+            if index > 0 && @raw[index-1] && @raw[index-1].is_a?(Change)
+              last_part = part.split(//).first(100).join
+              last_part += "..." if last_part.length != part.length
+            end
+            excerpt_part = last_part + first_part
+            
+            excerpt_part.blank? ? part : excerpt_part
+          else
+            part
+          end
         when Change then f.format(part)
         end
+        index += 1
         sum << part
       end
     end
