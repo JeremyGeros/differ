@@ -2,20 +2,25 @@ module Differ
   module Format
     module HTML
       class << self
-        def format(change)
-          (change.change? && as_change(change)) ||
-          (change.delete? && as_delete(change)) ||
-          (change.insert? && as_insert(change)) ||
-          ''
+        def call(change)
+          if change.change?
+            as_change(change)
+          elsif change.delete?
+            as_delete(change)
+          elsif change.insert?
+            as_insert(change)
+          else
+            ''
+          end
         end
 
-      private
+        private
         def as_insert(change)
-          %Q{<ins class="differ">#{change.insert}</ins>}
+          %Q(<ins class="differ">#{change.insert}</ins>)
         end
 
         def as_delete(change)
-          %Q{<del class="differ">#{change.delete}</del>}
+          %Q(<del class="differ">#{change.delete}</del>)
         end
 
         def as_change(change)

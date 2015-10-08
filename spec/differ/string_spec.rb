@@ -7,7 +7,7 @@ describe Differ::StringDiffer do
   end
 
   before(:each) do
-    $; = nil
+    Differ.separator = nil
   end
 
   describe '#diff' do
@@ -16,9 +16,9 @@ describe Differ::StringDiffer do
       'TO'.diff('FROM')
     end
 
-    it 'should call Differ#diff with $;' do
-      $; = 'x'
-      Differ.should_receive(:diff).with('TO', 'FROM', $;).once
+    it 'should call Differ#diff with Differ.separator' do
+      Differ.separator = 'x'
+      Differ.should_receive(:diff).with('TO', 'FROM', Differ.separator).once
       'TO'.diff('FROM')
     end
   end
@@ -29,9 +29,9 @@ describe Differ::StringDiffer do
       'TO' - 'FROM'
     end
 
-    it 'should call Differ#diff with $;' do
-      $; = 'x'
-      Differ.should_receive(:diff).with('TO', 'FROM', $;).once
+    it 'should call Differ#diff with Differ.separator' do
+      Differ.separator = 'x'
+      Differ.should_receive(:diff).with('TO', 'FROM', Differ.separator).once
       'TO' - 'FROM'
     end
   end
