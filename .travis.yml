@@ -1,0 +1,13 @@
+language: ruby
+rvm:
+  - 1.9.3
+  - 2.0.0
+  - 2.1
+  - 2.1.3
+  - ruby-head
+before_install: gem update --remote bundler
+script:
+  - rspec
+addons:
+  code_climate:
+    repo_token: b1cb0da8ca24f679bacb958b64796430154644dd666ad59ead2687a699e5c487

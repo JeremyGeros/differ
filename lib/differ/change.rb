@@ -14,17 +14,34 @@ module Differ
       !@delete.empty?
     end
 
+    def has_opposite_of?(delete_or_insert)
+      if delete_or_insert == :delete
+        self.insert?
+      else
+        self.delete?
+      end
+    end
+
+    def opposite_of(delete_or_insert)
+      if delete_or_insert == :delete
+        @insert
+      else
+        @delete
+      end
+
+    end
+
     def change?
-      !@insert.empty? && !@delete.empty?
+      insert? && delete?
     end
 
     def to_s
-      Differ.format.format(self)
+      Differ.format.call(self)
     end
-    alias :inspect :to_s
+    alias_method :inspect, :to_s
 
     def ==(other)
-      self.insert == other.insert && self.delete == other.delete
+      insert == other.insert && delete == other.delete
     end
   end
 end

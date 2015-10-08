@@ -21,28 +21,28 @@ describe Differ do
     end
 
     it 'should raise an error on undefined behavior' do
-      lambda {
+      lambda do
         Differ.format = 'threeve'
-      }.should raise_error('Unknown format type "threeve"')
+      end.should raise_error('Unknown format type "threeve"')
     end
   end
 
   describe '#format_for' do
     before(:each) { Differ.format = nil }
 
-    it 'should store any module passed to it' do
-      formatter = Module.new
+    it 'should store any callable passed to it' do
+      formatter = ->(c) { c.to_s }
       Differ.format_for(formatter).should == formatter
     end
 
     it 'should permit nil (default behavior)' do
-      Differ.format_for(nil).should == nil
+      Differ.format_for(nil).should.nil?
     end
 
     it 'should raise an error on undefined behavior' do
-      lambda {
+      lambda do
         Differ.format_for('threeve')
-      }.should raise_error('Unknown format type "threeve"')
+      end.should raise_error('Unknown format type "threeve"')
     end
 
     describe 'when passed a symbol' do
@@ -70,68 +70,68 @@ describe Differ do
     end
 
     it 'should hande no-change situations' do
-      @expected = diff('self')
+      @expected = Differ::Diff.new('self')
       diff_by_char.should == @expected
     end
 
     it 'should handle prepends' do
-      @to = "myself"
-      @expected = diff(+'my', 'self')
+      @to = 'myself'
+      @expected = Differ::Diff.new(+'my', 'self')
       diff_by_char.should == @expected
     end
 
     it 'should handle appends' do
       @to = 'self-interest'
-      @expected = diff('self', +'-interest')
+      @expected = Differ::Diff.new('self', +'-interest')
       diff_by_char.should == @expected
     end
 
     it 'should handle leading deletes' do
       @to = 'elf'
-      @expected = diff(-'s', 'elf')
+      @expected = Differ::Diff.new(-'s', 'elf')
       diff_by_char.should == @expected
     end
 
     it 'should handle trailing deletes' do
       @to = 'sel'
-      @expected = diff('sel', -'f')
+      @expected = Differ::Diff.new('sel', -'f')
       diff_by_char.should == @expected
     end
 
     it 'should handle simultaneous leading changes' do
       @to = 'wood-elf'
-      @expected = diff(('s' >> 'wood-'), 'elf')
+      @expected = Differ::Diff.new(('s' >> 'wood-'), 'elf')
       diff_by_char.should == @expected
     end
 
     it 'should handle simultaneous trailing changes' do
-      @to = "seasoning"
-      @expected = diff('se', ('lf' >> 'asoning'))
+      @to = 'seasoning'
+      @expected = Differ::Diff.new('se', ('lf' >> 'asoning'))
       diff_by_char.should == @expected
     end
 
     it 'should handle full-string changes' do
       @to = 'turgid'
-      @expected = diff('self' >> 'turgid')
+      @expected = Differ::Diff.new('self' >> 'turgid')
       diff_by_char.should == @expected
     end
 
     it 'should handle complex string additions' do
       @to = 'my sleeplife'
-      @expected = diff(+'my ', 's', +'l', 'e', +'ep', 'l', +'i', 'f', +'e')
+      @expected = Differ::Diff.new(+'my ', 's', +'l', 'e', +'ep', 'l', +'i', 'f', +'e')
       diff_by_char.should == @expected
     end
 
     it 'should handle complex string deletions' do
       @from = 'my sleeplife'
-      @expected = diff(-'my ', 's', -'l', 'e', -'ep', 'l', -'i', 'f', -'e')
+      @expected = Differ::Diff.new(-'my ', 's', -'l', 'e', -'ep', 'l', -'i', 'f', -'e')
       diff_by_char.should == @expected
     end
 
     it 'should handle complex string changes' do
       @from = 'my sleeplife'
       @to = 'seasonal'
-      @expected = diff(-'my ', 's', -'l', 'e', ('ep' >> 'asona'), 'l', -'ife')
+      @expected = Differ::Diff.new(-'my ', 's', -'l', 'e', ('ep' >> 'asona'), 'l', -'ife')
       diff_by_char.should == @expected
     end
   end
@@ -146,49 +146,49 @@ describe Differ do
     end
 
     it 'should hande no-change situations' do
-      @expected = diff('the daylight will come')
+      @expected = Differ::Diff.new('the daylight will come')
       diff_by_word.should == @expected
     end
 
     it 'should handle prepends' do
-      @to = "surely the daylight will come"
-      @expected = diff(+'surely ', 'the daylight will come')
+      @to = 'surely the daylight will come'
+      @expected = Differ::Diff.new(+'surely ', 'the daylight will come')
       diff_by_word.should == @expected
     end
 
     it 'should handle appends' do
       @to = 'the daylight will come in the morning'
-      @expected = diff('the daylight will come', +' in the morning')
+      @expected = Differ::Diff.new('the daylight will come', +' in the morning')
       diff_by_word.should == @expected
     end
 
     it 'should handle leading deletes' do
       @to = 'daylight will come'
-      @expected = diff(-'the ', 'daylight will come')
+      @expected = Differ::Diff.new(-'the ', 'daylight will come')
       diff_by_word.should == @expected
     end
 
     it 'should handle trailing deletes' do
       @to = 'the daylight'
-      @expected = diff('the daylight', -' will come')
+      @expected = Differ::Diff.new('the daylight', -' will come')
       diff_by_word.should == @expected
     end
 
     it 'should handle simultaneous leading changes' do
       @to = 'some daylight will come'
-      @expected = diff(('the' >> 'some'), ' daylight will come')
+      @expected = Differ::Diff.new(('the' >> 'some'), ' daylight will come')
       diff_by_word.should == @expected
     end
 
     it 'should handle simultaneous trailing changes' do
-      @to = "the daylight will flood the room"
-      @expected = diff('the daylight will ', ('come' >> 'flood the room'))
+      @to = 'the daylight will flood the room'
+      @expected = Differ::Diff.new('the daylight will ', ('come' >> 'flood the room'))
       diff_by_word.should == @expected
     end
 
     it 'should handle full-string changes' do
       @to = 'if we should expect it'
-      @expected = diff(
+      @expected = Differ::Diff.new(
         ('the' >> 'if'),
         ' ',
         ('daylight' >> 'we'),
@@ -202,27 +202,27 @@ describe Differ do
 
     it 'should handle complex string additions' do
       @to = 'the fresh daylight will surely come'
-      @expected = diff('the ', +'fresh ', 'daylight will ', +'surely ', 'come')
+      @expected = Differ::Diff.new('the ', +'fresh ', 'daylight will ', +'surely ', 'come')
       diff_by_word.should == @expected
     end
 
     it 'should handle complex string deletions' do
       @from = 'the fresh daylight will surely come'
-      @expected = diff('the ', -'fresh ', 'daylight will ', -'surely ', 'come')
+      @expected = Differ::Diff.new('the ', -'fresh ', 'daylight will ', -'surely ', 'come')
       diff_by_word.should == @expected
     end
 
     it 'should handle complex string changes' do
       @from = 'the fresh daylight will surely come'
       @to = 'something fresh will become surly'
-      @expected = diff(
+      @expected = Differ::Diff.new(
         ('the' >> 'something'),
         ' fresh ',
         -'daylight ',
         'will ',
         ( 'surely' >> 'become'),
         ' ',
-        ( 'come' >> 'surly' )
+        ( 'come' >> 'surly')
       )
       diff_by_word.should == @expected
     end
@@ -242,7 +242,7 @@ describe Differ do
     end
 
     it 'should hande no-change situations' do
-      @expected = diff(@to)
+      @expected = Differ::Diff.new(@to)
       diff_by_line.should == @expected
     end
 
@@ -253,7 +253,7 @@ describe Differ do
         slowly, sleeplessly
         following harp flails
       HAIKU
-      @expected = diff(+"A Haiku:\n", @from)
+      @expected = Differ::Diff.new(+"A Haiku:\n", @from)
       diff_by_line.should == @expected
     end
 
@@ -264,7 +264,7 @@ describe Differ do
         following harp flails
         -- http://everypoet.net
       HAIKU
-      @expected = diff(@from, +"\n-- http://everypoet.net")
+      @expected = Differ::Diff.new(@from, +"\n-- http://everypoet.net")
       diff_by_line.should == @expected
     end
 
@@ -275,7 +275,7 @@ describe Differ do
         slowly, sleeplessly
         following harp flails
       HAIKU
-      @expected = diff(-"A Haiku:\n", @to)
+      @expected = Differ::Diff.new(-"A Haiku:\n", @to)
       diff_by_line.should == @expected
     end
 
@@ -286,7 +286,7 @@ describe Differ do
         following harp flails
         -- http://everypoet.net
       HAIKU
-      @expected = diff(@to, -"\n-- http://everypoet.net")
+      @expected = Differ::Diff.new(@to, -"\n-- http://everypoet.net")
       diff_by_line.should == @expected
     end
 
@@ -296,9 +296,9 @@ describe Differ do
         slowly, sleeplessly
         following harp flails
       HAIKU
-      @expected = diff(
+      @expected = Differ::Diff.new(
         ('stallion sinks gently' >> 'stallion sings gently'),
-        "\nslowly, sleeplessly" <<
+        "\nslowly, sleeplessly" \
         "\nfollowing harp flails"
       )
       diff_by_line.should == @expected
@@ -310,8 +310,8 @@ describe Differ do
         slowly, sleeplessly
         drifting ever on
       HAIKU
-      @expected = diff(
-        "stallion sinks gently\n" <<
+      @expected = Differ::Diff.new(
+        "stallion sinks gently\n" \
         "slowly, sleeplessly\n",
         ('following harp flails' >> 'drifting ever on')
       )
@@ -324,7 +324,7 @@ describe Differ do
         slumber lazily, shoulda
         used more Burma Shave
       HAIKU
-      @expected = diff(@from >> @to)
+      @expected = Differ::Diff.new(@from >> @to)
       diff_by_line.should == @expected
     end
 
@@ -337,9 +337,9 @@ describe Differ do
         following harp flails
         -- modified from source
       HAIKU
-      @expected = diff(
+      @expected = Differ::Diff.new(
         +"A Haiku, with annotation:\n",
-        "stallion sinks gently\n" <<
+        "stallion sinks gently\n" \
         "slowly, sleeplessly\n",
         +"(flailing)\n",
         'following harp flails',
@@ -357,9 +357,9 @@ describe Differ do
         following harp flails
         -- modified from source
       HAIKU
-      @expected = diff(
+      @expected = Differ::Diff.new(
         -"A Haiku, with annotation:\n",
-        "stallion sinks gently\n" <<
+        "stallion sinks gently\n" \
         "slowly, sleeplessly\n",
         -"(flailing)\n",
         'following harp flails',
@@ -376,7 +376,7 @@ describe Differ do
         following harp flails
         -- modified from source
       HAIKU
-      @expected = diff(
+      @expected = Differ::Diff.new(
         ('stallion sinks gently' >> 'stallion sings gently'),
         "\nslowly, sleeplessly\n",
         +"(flailing)\n",
@@ -397,55 +397,55 @@ describe Differ do
     end
 
     it 'should hande no-change situations' do
-      @expected = diff('alteration, asymmetry, a deviation')
+      @expected = Differ::Diff.new('alteration, asymmetry, a deviation')
       diff_by_comma.should == @expected
     end
 
     it 'should handle prepends' do
-      @to = "aberration, alteration, asymmetry, a deviation"
-      @expected = diff(+'aberration, ', 'alteration, asymmetry, a deviation')
+      @to = 'aberration, alteration, asymmetry, a deviation'
+      @expected = Differ::Diff.new(+'aberration, ', 'alteration, asymmetry, a deviation')
       diff_by_comma.should == @expected
     end
 
     it 'should handle appends' do
-      @to = "alteration, asymmetry, a deviation, change"
-      @expected = diff('alteration, asymmetry, a deviation', +', change')
+      @to = 'alteration, asymmetry, a deviation, change'
+      @expected = Differ::Diff.new('alteration, asymmetry, a deviation', +', change')
       diff_by_comma.should == @expected
     end
 
     it 'should handle leading deletes' do
       @to = 'asymmetry, a deviation'
-      @expected = diff(-'alteration, ', 'asymmetry, a deviation')
+      @expected = Differ::Diff.new(-'alteration, ', 'asymmetry, a deviation')
       diff_by_comma.should == @expected
     end
 
     it 'should handle trailing deletes' do
       @to = 'alteration, asymmetry'
-      @expected = diff('alteration, asymmetry', -', a deviation')
+      @expected = Differ::Diff.new('alteration, asymmetry', -', a deviation')
       diff_by_comma.should == @expected
     end
 
     it 'should handle simultaneous leading changes' do
       @to = 'aberration, asymmetry, a deviation'
-      @expected = diff(('alteration' >> 'aberration'), ', asymmetry, a deviation')
+      @expected = Differ::Diff.new(('alteration' >> 'aberration'), ', asymmetry, a deviation')
       diff_by_comma.should == @expected
     end
 
     it 'should handle simultaneous trailing changes' do
       @to = 'alteration, asymmetry, change'
-      @expected = diff('alteration, asymmetry, ', ('a deviation' >> 'change'))
+      @expected = Differ::Diff.new('alteration, asymmetry, ', ('a deviation' >> 'change'))
       diff_by_comma.should == @expected
     end
 
     it 'should handle full-string changes' do
       @to = 'uniformity, unison, unity'
-      @expected = diff(@from >> @to)
+      @expected = Differ::Diff.new(@from >> @to)
       diff_by_comma.should == @expected
     end
 
     it 'should handle complex string additions' do
       @to = 'aberration, alteration, anomaly, asymmetry, a deviation, change'
-      @expected = diff(
+      @expected = Differ::Diff.new(
         +'aberration, ',
         'alteration, ',
         +'anomaly, ',
@@ -457,7 +457,7 @@ describe Differ do
 
     it 'should handle complex string deletions' do
       @from = 'aberration, alteration, anomaly, asymmetry, a deviation, change'
-      @expected = diff(
+      @expected = Differ::Diff.new(
         -'aberration, ',
         'alteration, ',
         -'anomaly, ',
@@ -470,7 +470,7 @@ describe Differ do
     it 'should handle complex string changes' do
       @from = 'a, d, g, gh, x'
       @to = 'a, b, c, d, e, f, g, h, i, j'
-      @expected = diff(
+      @expected = Differ::Diff.new(
         'a, ',
         +'b, c, ',
         'd, ',
@@ -501,7 +501,7 @@ describe Differ do
         slowly, restlessly
         following harp flails
       HAIKU
-      @expected = diff(
+      @expected = Differ::Diff.new(
         "stallion sinks gently\n",
         ('slowly, sleeplessly' >> 'slowly, restlessly'),
         "\nfollowing harp flails"
