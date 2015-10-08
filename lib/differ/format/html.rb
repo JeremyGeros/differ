@@ -16,11 +16,11 @@ module Differ
 
         private
         def as_insert(change)
-          change.insert.lines.map{|l| %Q{<ins class="differ">#{l}</ins>}}.join
+          change.insert.lines.map{|l| %Q{<ins>#{l}</ins>}}.join
         end
 
         def as_delete(change)
-          change.delete.lines.map{|l| %Q{<del class="differ">#{l}</del>}}.join
+          change.delete.lines.map{|l| %Q{<del>#{l}</del>}}.join
         end
 
         def as_change(change)
